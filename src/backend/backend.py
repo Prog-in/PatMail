@@ -166,11 +166,10 @@ def gen_user_message(template: Template, name='', email='') -> str:
         - email: recipient's email
 
     $-overrides allowed:
-        - ${PERSON_NAME} : name
+        - ${NAME} : name
         - ${EMAIL} : email
     """
-    # message = template.substitute(PERSON_NAME=name.title())
-    message = template.substitute({'PERSON_NAME': name, 'EMAIL': email})
+    message = template.safe_substitute(NAME=name, EMAIL=email)
     return message
 
 
@@ -193,7 +192,6 @@ def send_mails(user_email: str,
         - template: the message to be sent, with possible $-overrides
         - subject: the subject of the email
     """
-    # por enquanto apenas gmail disponível
     with smtplib.SMTP(host='smtp.gmail.com', port=587) as server:
         server.starttls()
         server.login(user_email, user_passwd)
