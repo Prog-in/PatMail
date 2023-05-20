@@ -1,0 +1,6 @@
+__author__ = 'João Gabriel Feres'
+__description__ = 'Meu pacote incrível'
+__email__ = 'joaogabrielferes@example.com'
+__license__ = 'MIT'
+__project__ = 'PatMail'
+__version__ = '0.0.1'
