@@ -1,3 +1,4 @@
+from src.metadata import __project__
 import tkinter as tk
 from tkinter import scrolledtext 
 from tkinter import ttk
@@ -6,12 +7,10 @@ from tkinter import messagebox
 import src.backend.backend as backend
 import typing
 
-
 # TODO 
 # implementar Style (dark e white)
 # colocar o path de contacts file e template file nas abas
 # implementar forma de ver se a informação já foi preenchida
-
 
 class App():
     def start(self):
@@ -19,7 +18,7 @@ class App():
 
         self.root.minsize(self.MIN_WIDTH, self.MIN_HEIGHT)
         self.root.maxsize(self.MAX_WIDTH, self.MAX_HEIGHT)
-        self.root.title('Email Sender')
+        self.root.title(__project__)
 
         self.root.mainloop()
 

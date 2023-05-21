@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from metadata import (
+from src.metadata import (
     __author__,
     __description__,
     __email__,
@@ -16,8 +16,6 @@ with open('requirements.txt') as f:
 
 with open('LICENSE') as f:
     license = f.read()
-
-print(__project__)
 
 setup(
     name=__project__,
