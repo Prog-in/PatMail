@@ -57,6 +57,7 @@ class InvalidHeader(ContactsTableError):
 
 
 ENCODING = 'utf-8'
+ALT_ENCODING = 'latin-1'
 USER_HOME = os.path.expanduser('~')
 sending_emails_errors = []
 
@@ -103,7 +104,11 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
             yield name, email
 
 
-    contacts_df = pd.read_csv(file_path)
+    try:
+        contacts_df = pd.read_csv(file_path, encoding=ENCODING)
+    except UnicodeDecodeError:  # error with \xe9 char
+        contacts_df = pd.read_csv(file_path, encoding=ALT_ENCODING)
+        
     #if file_path.endswith(('.csv', '.CSV')):
     #    contacts_df = pd.read_csv(file_path)
     #elif file_path.endswith(('xls', 'xlsx')):
