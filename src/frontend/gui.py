@@ -74,14 +74,13 @@ class App():
         self.notebook.pack(fill='both', expand=True)
 
         self.contacts_filetypes = (
-            ('csv files', '.csv'), 
-            ('Excel files', '.xlsx'), 
-            ('Old Excel files', '.xls'),
+            ('csv files', ('.csv', '.CSV')), 
+            #('Excel files', ('.xlsx', '.XLSX', '.xls', '.XLS')), 
         )
 
         self.template_filetypes = (
-            ('Txt files', '.txt'), 
-            ('Doc files', ('.doc', '.docx')),
+            ('Txt files', ('.txt', '.TXT')), 
+            ('Doc files', ('.docx', '.DOCX', '.doc', '.DOC')),
         )
 
         self.contacts_filetypes_supported = self.get_supported(self.contacts_filetypes)

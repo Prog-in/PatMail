@@ -88,7 +88,7 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
         example2,example2@email.com
         ...
     """
-    def iter_contacts(filtered_contacts_df: pd.DataFrame):
+    def iter_contacts(filtered_contacts_df: pd.DataFrame) -> typing.Generator[tuple[str, str], None, None]:
         """
         Returns a generator with the elements (name, email), already treated
         """
@@ -97,14 +97,15 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
         qtd_rows = filtered_contacts_df.shape[0]
 
         for row in range(qtd_rows):
-            name = filtered_contacts_df.at[row, col_name]
+            name: str = filtered_contacts_df.at[row, col_name]
             name = name.capitalize()
-            email = filtered_contacts_df.at[row, col_email]
+            email: str = filtered_contacts_df.at[row, col_email]
             yield name, email
 
 
-    if file_path.endswith('.csv'):
-        contacts_df = pd.read_csv(file_path)
+    contacts_df = pd.read_csv(file_path)
+    #if file_path.endswith(('.csv', '.CSV')):
+    #    contacts_df = pd.read_csv(file_path)
     #elif file_path.endswith(('xls', 'xlsx')):
     #    contacts_df = pd.read_excel(file_path)
     
