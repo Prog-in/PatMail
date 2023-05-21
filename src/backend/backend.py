@@ -76,7 +76,7 @@ def file_exists(file: str | tuple) -> bool:
         return os.path.isfile(file)
 
 
-def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None]:
+def get_contacts(file_path: str, sep: str) -> typing.Generator[tuple[str, str], None, None]:
     """
     Returns a generator containing, respectively, name and email of the contacts.
 
@@ -84,10 +84,10 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
         - file_path: file path from which information will be imported
 
     Expected pattern in CSV:
-        name,email
-        example1,example1@email.com
-        example2,example2@email.com
-        ...
+        * name,email
+        * example1,example1@email.com
+        * example2,example2@email.com
+        * ...
     """
     def iter_contacts(filtered_contacts_df: pd.DataFrame) -> typing.Generator[tuple[str, str], None, None]:
         """
@@ -105,9 +105,9 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
 
 
     try:
-        contacts_df = pd.read_csv(file_path, encoding=ENCODING)
+        contacts_df = pd.read_csv(file_path, sep=sep, encoding=ENCODING)
     except UnicodeDecodeError:  # error with \xe9 char
-        contacts_df = pd.read_csv(file_path, encoding=ALT_ENCODING)
+        contacts_df = pd.read_csv(file_path, sep=sep, encoding=ALT_ENCODING)
         
     #if file_path.endswith(('.csv', '.CSV')):
     #    contacts_df = pd.read_csv(file_path)
@@ -115,7 +115,7 @@ def get_contacts(file_path: str) -> typing.Generator[tuple[str, str], None, None
     #    contacts_df = pd.read_excel(file_path)
     
     columns = contacts_df.columns
-
+    
     if len(columns) != 2:
         raise InvalidNumberOfColumnsError(len(columns))
 

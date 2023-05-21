@@ -26,14 +26,14 @@ class App():
     def __init__(self):
         self.root = tk.Tk()
 
-        self.WIDTH = 630
-        self.HEIGHT = 380
+        self.WIDTH = 650
+        self.HEIGHT = 420
 
-        self.MIN_WIDTH = 550
-        self.MIN_HEIGHT = 380
+        self.MIN_WIDTH = 630
+        self.MIN_HEIGHT = 400
 
         self.MAX_WIDTH = 700
-        self.MAX_HEIGHT = 400
+        self.MAX_HEIGHT = 450
 
         # create notebook
         self.notebook = ttk.Notebook(self.root)
@@ -41,8 +41,10 @@ class App():
         # Initialize the *path vars, needed for some functions
         self.contacts_path = '' 
         self.template_path = ''
+        
+        self.csv_separator = ','
+        self.can_change_sep = True
 
-        # Initialize the user account vars
         self.email = ''
         self.password = ''
 
@@ -144,6 +146,8 @@ class App():
 
             self.contacts_file_stringvar = tk.StringVar(home_frame2)
             self.template_file_stringvar = tk.StringVar(home_frame2)
+            self.csv_sep_stringvar = tk.StringVar(home_frame2)
+            self.current_csv_sep = tk.StringVar(home_frame2, f'current: \"{self.csv_separator}\"')
 
             label_import_contacts = ttk.Label(
                 home_frame2, 
@@ -167,7 +171,11 @@ class App():
                 text='Submit', 
                 command=self.import_contacts,
             )
-
+            button_remove_contacts = ttk.Button(
+                home_frame2,
+                text="Remove",
+                command=self.remove_contacts,
+            )
             label_import_template = ttk.Label(
                 home_frame2, 
                 text='Import template file:',
@@ -190,19 +198,49 @@ class App():
                 text='Submit', 
                 command=self.import_template,
             )
+            button_remove_template = ttk.Button(
+                home_frame2,
+                text="Remove",
+                command=self.remove_template,
+            )
+            label_csv_sep = ttk.Label(
+                home_frame2,
+                text='Enter csv separator:',
+            )
+            entry_csv_sep = ttk.Entry(
+                home_frame2,
+                textvariable=self.csv_sep_stringvar
+            )
+            button_change_csv_sep = ttk.Button(
+                home_frame2,
+                text='Submit',
+                command=self.change_csv_separator,
+            )
+            label_see_csv_sep = ttk.Label(
+                home_frame2,
+                textvariable=self.current_csv_sep,
+                relief='sunken',
+            )
 
             for i in range(5):
                 home_frame2.columnconfigure(i, weight=1)
 
             label_import_contacts.grid(row=0, column=1, padx=6, pady=5, sticky='e')
             entry_import_contacts.grid(row=0, column=2, padx=6, pady=5, sticky='ew')
-            button_browse_import_contacts.grid(row=0, column=3, padx=6, pady=5, sticky='w')
-            button_submit_import_contacts.grid(row=0, column=4, padx=6, pady=5, sticky='w')
+            button_browse_import_contacts.grid(row=0, column=3, padx=6, pady=5)
+            button_submit_import_contacts.grid(row=0, column=4, padx=6, pady=5)
+            button_remove_contacts.grid(row=0, column=5, padx=6, pady=5)
 
             label_import_template.grid(row=1, column=1, padx=6, pady=5, sticky='e')
             entry_import_template.grid(row=1, column=2, padx=6, pady=5, sticky='ew')
-            button_browse_import_template.grid(row=1, column=3, padx=6, pady=5, sticky='w')
-            button_submit_import_template.grid(row=1, column=4, padx=6, pady=5, sticky='w')
+            button_browse_import_template.grid(row=1, column=3, padx=6, pady=5)
+            button_submit_import_template.grid(row=1, column=4, padx=6, pady=5)
+            button_remove_template.grid(row=1, column=5, padx=6, pady=5)
+
+            label_csv_sep.grid(row=2, column=1, padx=6, pady=6, sticky='e')
+            entry_csv_sep.grid(row=2, column=2, padx=6, pady=6, sticky='ew')
+            button_change_csv_sep.grid(row=2, column=3, padx=6, pady=6)
+            label_see_csv_sep.grid(row=2, column=4, padx=6, pady=6, sticky='ns')
 
             return home_frame2
         
@@ -241,7 +279,6 @@ class App():
 
 
         def create_home_frame4() -> ttk.Labelframe:
-
             home_frame4 = ttk.Labelframe(
                 frame_home, 
                 text='Send Emails',
@@ -479,13 +516,12 @@ class App():
                         'File imported\n\n' + path
                     )
                 return path
-            else:         
+            else:    
                 supported = False
                 for extension in extensions_supported:
                     if path.endswith(extension):
                         supported = True       
                         break
-
                 if supported:
                     if show_success_notice:
                         messagebox.showinfo(
@@ -511,18 +547,19 @@ class App():
         path = self.import_file(self.contacts_file_stringvar, self.contacts_filetypes_supported, False)
         if path != '':
             try:
-                backend.get_contacts(path)
+                backend.get_contacts(path, self.csv_separator)
             except Exception as error:
                 messagebox.showerror(
                     'ERROR', 
                     error
                 )
             else:
+                self.contacts_path = path
+                self.can_change_sep = False
                 messagebox.showinfo(
                     'INFO', 
                     'File imported\n\n' + path
                 )
-                self.contacts_path = path
 
 
     def import_template(self) -> None:
@@ -562,16 +599,16 @@ class App():
             stringvar.set(path)        
 
 
-    def contacts_isimported(self) -> bool:
+    def is_contacts_imported(self) -> bool:
         return self.contacts_path != ''
 
 
-    def template_isimported(self) -> bool:
+    def is_template_imported(self) -> bool:
         return self.template_path != ''
 
 
     def populate_treeview_contacts(self) -> None:
-        if not self.contacts_isimported():
+        if not self.is_contacts_imported():
             messagebox.showwarning(
                 'WARNING', 
                 'Please, enter contacts file path in "Home" tab'
@@ -580,7 +617,7 @@ class App():
         else:
             # Cleans the treeview from previous populate
             self.treeview_contacts.delete(*self.treeview_contacts.get_children())
-            contacts_generator = backend.get_contacts(self.contacts_path)
+            contacts_generator = backend.get_contacts(self.contacts_path, self.csv_separator)
             for contact in contacts_generator:
                 self.treeview_contacts.insert('', 'end', values=contact)
     
@@ -600,7 +637,7 @@ class App():
 
 
     def visualize_template(self) -> None:
-        if not self.template_isimported():
+        if not self.is_template_imported():
             messagebox.showwarning(
                 'WARNING', 
                 'Please, enter template file path in "Home" tab'
@@ -619,7 +656,7 @@ class App():
 
 
     def gen_preview_toplevel(self, event: tk.Event) -> None:
-        if not self.template_isimported():
+        if not self.is_template_imported():
             messagebox.showwarning(
                 'WARNING',
                 'Import template file before.'
@@ -680,16 +717,16 @@ class App():
                 'WARNING',
                 'Please, enter the subject of the email before.'
             )
-        elif not self.contacts_isimported() or not self.template_isimported():
+        elif not self.is_contacts_imported() or not self.is_template_imported():
             messagebox.showwarning(
                 'WARNING',
                 'Import contacts file and template file before.'
             )
         else:
-            contacts = backend.get_contacts(self.contacts_path)
+            contacts = backend.get_contacts(self.contacts_path, self.csv_separator)
             template = backend.read_template(self.template_path)
 
-            try:  # error in connection phase
+            try:
                 backend.send_mails(
                     self.email, 
                     self.password, 
@@ -777,3 +814,27 @@ class App():
         treeview_scroolbar_y.pack(side='right', fill='y')
         treeview_scroolbar_x.pack(side='bottom', fill='x')
         errors_treeview.pack(fill='both', expand=True)
+
+
+    def change_csv_separator(self):
+        sep = self.csv_sep_stringvar.get()
+        if self.can_change_sep and sep != '' and len(sep) == 1: # add messageboxes on fail
+            self.csv_separator = sep
+        self.csv_sep_stringvar.set('')
+        self.current_csv_sep.set(f'current: \"{self.csv_separator}\"')
+
+
+    def remove_contacts(self):
+        self.contacts_path = ''
+        self.can_change_sep = True
+        messagebox.showinfo(
+            'INFO',
+            'contacts file removed',
+        )
+
+    def remove_template(self):
+        self.template_path = ''
+        messagebox.showinfo(
+            'INFO',
+            'template file removed',
+        )
