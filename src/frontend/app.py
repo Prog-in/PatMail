@@ -1,11 +1,12 @@
-from src.metadata import __project__
 import tkinter as tk
 from tkinter import scrolledtext 
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
-import src.backend.backend as backend
 import typing
+import src.backend.backend as backend
+import src.backend.gui_functions as gui_functions
+from src.metadata import __project__
 
 # TODO 
 # implementar Style (dark e white)
@@ -14,7 +15,7 @@ import typing
 
 class App():
     def start(self):
-        backend.set_geometry_popup(self.root, self.root, self.WIDTH, self.HEIGHT)
+        gui_functions.set_geometry_popup(self.root, self.root, self.WIDTH, self.HEIGHT)
 
         self.root.minsize(self.MIN_WIDTH, self.MIN_HEIGHT)
         self.root.maxsize(self.MAX_WIDTH, self.MAX_HEIGHT)
@@ -84,8 +85,8 @@ class App():
             ('Doc files', ('.docx', '.DOCX', '.doc', '.DOC')),
         )
 
-        self.contacts_filetypes_supported = self.get_supported(self.contacts_filetypes)
-        self.template_filetypes_supported = self.get_supported(self.template_filetypes)
+        self.contacts_filetypes_supported = gui_functions.get_supported(self.contacts_filetypes)
+        self.template_filetypes_supported = gui_functions.get_supported(self.template_filetypes)
 
 
     def create_frame_home(self) -> ttk.Frame:
@@ -160,7 +161,7 @@ class App():
             button_browse_import_contacts = ttk.Button(
                 home_frame2, 
                 text='Browse', 
-                command=lambda: self.browse(
+                command=lambda: gui_functions.browse(
                     self.contacts_file_stringvar, 
                     'Select Contacts File', 
                     self.contacts_filetypes
@@ -187,7 +188,7 @@ class App():
             button_browse_import_template = ttk.Button(
                 home_frame2, 
                 text='Browse', 
-                command=lambda: self.browse(
+                command=lambda: gui_functions.browse(
                     self.template_file_stringvar, 
                     'Select Template File', 
                     self.template_filetypes
@@ -380,7 +381,7 @@ class App():
         button_browse_attachments = ttk.Button(
             frame_above, 
             text='Browse', 
-            command=lambda: self.browse(
+            command=lambda: gui_functions.browse(
                 self.attachments_str, 
                 'Select Attachment File', 
                 None
@@ -486,65 +487,9 @@ class App():
             )
         self._subject.set('')
 
-    
-    def get_supported(self, filetypes: tuple[str, str | tuple[str]]) -> list[str]:
-        supported = []
-        for name, extension in filetypes:
-            if isinstance(extension, tuple):
-                for ext in extension:
-                    supported.append(ext)
-            else:
-                supported.append(extension)
-        
-        return supported
-
-
-    def import_file(
-        self, 
-        string_var: tk.StringVar, 
-        extensions_supported: list | None, 
-        show_success_notice: bool = True
-        ) -> str:
-        path = string_var.get()
-        string_var.set('')  # teste
-
-        if backend.file_exists(path):
-            if extensions_supported is None:
-                if show_success_notice:
-                    messagebox.showinfo(
-                        'INFO', 
-                        'File imported\n\n' + path
-                    )
-                return path
-            else:    
-                supported = False
-                for extension in extensions_supported:
-                    if path.endswith(extension):
-                        supported = True       
-                        break
-                if supported:
-                    if show_success_notice:
-                        messagebox.showinfo(
-                            'INFO', 
-                            'File imported\n\n' + path
-                        )
-                    return path
-                else:
-                    messagebox.showerror(
-                        'ERROR', 
-                        'Invalid extension\n\nAre supported: {}'.format(', '.join(extensions_supported))
-                    )
-        else:
-            messagebox.showerror(
-                'ERROR',  
-                'Invalid path'
-            )    
-
-        return ''
-
 
     def import_contacts(self) -> None:
-        path = self.import_file(self.contacts_file_stringvar, self.contacts_filetypes_supported, False)
+        path = gui_functions.import_file(self.contacts_file_stringvar, self.contacts_filetypes_supported, False)
         if path != '':
             try:
                 backend.get_contacts(path, self.csv_separator)
@@ -563,13 +508,13 @@ class App():
 
 
     def import_template(self) -> None:
-        path = self.import_file(self.template_file_stringvar, self.template_filetypes_supported)
+        path = gui_functions.import_file(self.template_file_stringvar, self.template_filetypes_supported)
         if path != '':
             self.template_path = path
 
 
     def import_attachments(self) -> None:
-        path = self.import_file(self.attachments_str, None, False)
+        path = gui_functions.import_file(self.attachments_str, None, False)
         if path != '':
             if path in self.attachments_list:
                 messagebox.showwarning(
@@ -581,23 +526,8 @@ class App():
                 'File imported\n\n' + path
             )
             self.attachments_list.append(path)
+            self.populate_treeview_attachments()
     
-
-    def browse(self, stringvar: str, title: str, filetypes: str | None):
-        if filetypes is None:
-            path = filedialog.askopenfilename(
-                initialdir=backend.USER_HOME, 
-                title=title,
-            )        
-        else:
-            path = filedialog.askopenfilename(
-                initialdir=backend.USER_HOME, 
-                title=title, 
-                filetypes=filetypes
-            )
-        if backend.file_exists(path):
-            stringvar.set(path)        
-
 
     def is_contacts_imported(self) -> bool:
         return self.contacts_path != ''
@@ -612,8 +542,7 @@ class App():
             messagebox.showwarning(
                 'WARNING', 
                 'Please, enter contacts file path in "Home" tab'
-            )
-            
+            )  
         else:
             # Cleans the treeview from previous populate
             self.treeview_contacts.delete(*self.treeview_contacts.get_children())
@@ -672,7 +601,7 @@ class App():
                     self.root, 
                 )
                 email_preview.title('Email Preview')
-                backend.set_geometry_popup(email_preview, self.root, 600, 400)
+                gui_functions.set_geometry_popup(email_preview, self.root, 600, 400)
 
                 scrolledtext_email_preview = scrolledtext.ScrolledText(
                     master=email_preview, 
@@ -753,70 +682,10 @@ class App():
                     header = 'Errors occurred with sending emails. See below.'
                     # message: name, email, error
                     messages = (message for message in send_emails_errors)
-                    self.gen_error_toplevel(header, messages)
-    
-
-    def gen_error_toplevel(
-        self, 
-        header: str, 
-        messages: typing.Generator[tuple[Exception, str, str], None, None]
-        ) -> None:
-        error_toplevel = tk.Toplevel(
-            self.root,
-        )
-        error_toplevel.title('Errors with sending emails')
-        error_toplevel.resizable(False, False)
-        backend.set_geometry_popup(error_toplevel, self.root, 700, 400)
-
-        errors_entry = ttk.Label(
-            error_toplevel,
-            text=header,
-        )
-        columns = ('Name', 'Email', 'Error')
-        errors_treeview = ttk.Treeview(
-            error_toplevel,
-            columns=columns,
-            show='headings',
-            selectmode='none',
-        )   
-        treeview_scroolbar_y = ttk.Scrollbar(
-            error_toplevel,
-            orient='vertical', 
-            command=errors_treeview.yview,
-        )
-        treeview_scroolbar_x = ttk.Scrollbar(
-            error_toplevel,
-            orient='horizontal', 
-            command=errors_treeview.xview,
-        )
-        button_exit = ttk.Button(
-            error_toplevel,
-            text='Exit',
-            command=error_toplevel.destroy,
-        )
-        errors_treeview.configure(
-            yscrollcommand=treeview_scroolbar_y.set,
-            xscrollcommand=treeview_scroolbar_x.set,
-        )
-
-        errors_treeview.heading('Name', text='Name', anchor='w')
-        errors_treeview.heading('Email', text='Email', anchor='w')
-        errors_treeview.heading('Error', text='Error', anchor='w')
-        errors_treeview.column('Name', minwidth=250, stretch=True)
-        errors_treeview.column('Email', minwidth=300, stretch=True)
-        errors_treeview.column('Error', minwidth=800, stretch=True)
-
-        for message in messages:
-            errors_treeview.insert('', 'end', values=message)
-
-        errors_entry.pack(anchor='w')
-        button_exit.pack(side='bottom', pady=6)
-        treeview_scroolbar_y.pack(side='right', fill='y')
-        treeview_scroolbar_x.pack(side='bottom', fill='x')
-        errors_treeview.pack(fill='both', expand=True)
+                    gui_functions.gen_error_toplevel(header, messages)
 
 
-    def change_csv_separator(self):
+    def change_csv_separator(self) -> None:
         sep = self.csv_sep_stringvar.get()
         if self.can_change_sep and sep != '' and len(sep) == 1: # add messageboxes on fail
             self.csv_separator = sep
@@ -824,7 +693,7 @@ class App():
         self.current_csv_sep.set(f'current: \"{self.csv_separator}\"')
 
 
-    def remove_contacts(self):
+    def remove_contacts(self) -> None:
         self.contacts_path = ''
         self.can_change_sep = True
         messagebox.showinfo(
@@ -832,7 +701,8 @@ class App():
             'contacts file removed',
         )
 
-    def remove_template(self):
+
+    def remove_template(self) -> None:
         self.template_path = ''
         messagebox.showinfo(
             'INFO',

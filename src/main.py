@@ -1,4 +1,4 @@
-from src.frontend.gui import App
+from src.frontend.app import App
 
 def main():
     app = App()

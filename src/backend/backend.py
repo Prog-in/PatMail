@@ -7,9 +7,7 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.utils import formatdate
 from email import encoders
-from pathlib import Path
-from screeninfo import get_monitors  # Get the active monitor
-from tkinter import Tk, Toplevel  
+from pathlib import Path 
 from string import Template
 
 
@@ -235,40 +233,3 @@ def get_send_emails_errors() -> list[tuple[Exception, str, str]]:
     sending_emails_errors = []
 
     return tmp
-    
-
-def set_geometry_popup(
-    popup: Tk | Toplevel, 
-    root: Tk, 
-    width: int, 
-    height: int
-    ) -> None:
-    """
-    Sets the geometry of the new window in the middle of the selected screen
-    
-    Parameters:
-        - popup: the popup to be created
-        - root: popup root
-        - width: popup width
-        - height: popup height
-    """
-
-    def get_monitor_from_coord(x, y):
-        """
-        Find the active monitor from tkinter geometry coordinates
-        
-        Parameters:
-            - x: x coordinates
-            - y: y coordinates
-        """
-        monitors = get_monitors()
-
-        for m in reversed(monitors):
-            if m.x <= x <= m.width + m.x and m.y <= y <= m.height + m.y:
-                return m
-        return monitors[0]
-
-    monitor = get_monitor_from_coord(root.winfo_x(), root.winfo_y())
-    monitor_pos_width = (monitor.width - width) // 2 + monitor.x
-    monitor_pos_height = (monitor.height - height) // 2 + monitor.y
-    popup.geometry(f"{width}x{height}+{monitor_pos_width}+{monitor_pos_height}")
