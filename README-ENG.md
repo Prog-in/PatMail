@@ -1,99 +1,98 @@
 # PatMail
 
-PatMail é um aplicativo para envio automatizado de emails feito totalmente em python, usando para interface gráfica o módulo TKinter. 
+PatMail is an application for automated sending of emails made entirely in python, using the TKinter module for the graphical interface.
 
-## Documentação
+## Documentation
+PatMail allows the user to import a .csv file of contacts, containing two columns, in order, "Name" and "Email", and a .txt file, which will contain the message to be sent to the contacts of the contacts file. Furthermore, PatMail allows the user to import attachments to be sent together with the message to be sent to contacts.
 
-PatMail permite ao usuário importar um arquivo .csv de contatos, contendo duas colunas, em ordem, "Name" e "Email", e um arquivo .txt, que conterá a mensagem a ser enviada aos contatos do arquivo de contatos. Além disso, PatMail permite ao usuário importar anexos para serem enviados juntos à mensagem a ser enviada aos contatos.
+### Usage
 
-### Utilização
+1- Import the files either by typing the file path or using the search tool;
 
-1- Importe os arquivos ou digitando o caminho do arquivo ou usando a ferramenta de busca;
+2- Add attachments to the body of the message, if you want;
 
-2- Adicione anexos ao corpo da mensagem, caso queira;
+3- Enter your email and password;
 
-3- Entre com seu email e senha;
+4- Add the email subject;
 
-4- Adicione o assunto do email;
+5- Click on "Send Emails";
 
-5- Clique em "Enviar Emails";
+NOTE: Steps 1 through 4 can be done in any order.
 
-OBS: os passos de 1 a 4 podem ser feitos em qualquer ordem.
+## Functionalities
 
-## Funcionalidades
-
-- Envio de email para diversos contatos de forma automatizada;
-- Permite anexar arquivos para enviar;
-- No arquivo .txt de mensagem, podem ser utilizadas 2 variáveis que serão substituídas por informações dos destinatários:
-    * ${NAME}: é substituído pelo nome do destinatário;
-    * ${EMAIL}: é substituído pelo email do destinatário;
-- Após importar o arquivo de contatos e o da mensagem, na aba de contatos será possível dar dois-cliques na linha de um destinatário para abrir uma pré-visualização da mensagem para esse destinatário em específico.
+- Automated sending of emails to several contacts;
+- Allows you to attach files to send;
+- In the message .txt file, 2 variables can be used that will be replaced by recipient information:
+    * ${NAME}: is replaced by the recipient's name;
+    * ${EMAIL}: is replaced by the recipient's email;
+- After importing the contacts file and the message file, in the contacts tab it will be possible to double-click on a recipient's line to open a preview of the message for that specific recipient.
 
 
-## Instalação
+## Installation
 
-Tendo os requisitos cumpridos, existem duas formas principais para realizar a instalação do pacote.
+Once the requirements are met, there are two main ways to install the package.
 
-### Requisitos
+### Requirements
 
-- Python 3.6 ou superior (o aplicativo não foi testado em todas as versões, então pode ser que funcione em versões anteriores a essa);
-- pip instalado;
+- Python 3.6 or higher (application has not been tested on all versions, so it may work on versions prior to this one);
+- pip install;
 
-### 1) usando como pacote do pip
+### 1) using as pip package
 
-- Baixe o código-fonte do PatMail;
-- Navegue até a raiz do projeto:
+- Download PatMail source code;
+- Navigate to the project root:
 
 ```bash
 cd Path/To/PathMail
 ```
 
-- Instale o aplicativo como um pacote python:
+- Install the app as a python package:
 
 ```bash
 pip install .
 ```
 
-- Caso o pip não esteja no PATH do sistema:
+- If pip is not in the system PATH:
 
 ```bash
 python3 -m pip install .
 ```
 
-- Após o fim da instalação, PatMail será instalado como um pacote do pip, e poderá ser aberto com:
+- After installation is complete, PatMail will be installed as a pip package, and can be opened with:
 
 ```bash
 PatMail
 ```
 
-### 2) chamando o arquivo de inicio diretamente
+### 2) calling the start file directly
 
-Caso o método 1 não funcione ou não queira deixar PatMail como um pacote do pip, pode simplesmente baixar as dependências necessárias e chamar o arquivo que inicia o aplicativo:
+If method 1 doesn't work or you don't want to leave PatMail as a pip package, you can simply download the necessary dependencies and call the file that starts the application:
 
 ```bash
 pip install -r /Path/To/PatMail/requirements.txt
 python3 /path/to/PatMail/src/main.py
 ```
 
-Obs: Caso opte pela segunda forma de instalação, utilizar um `alias` pode facilitar a inicialização do aplicativo. 
+Note: If you choose the second installation method, using an `alias` may facilitate application startup.
 
-#### Um exemplo no bash:
+#### An example in bash:
 
-adicione ao ~/.bashrc ou equivalente a seguinte linha:
+add to ~/.bashrc or equivalent the following line:
 
 ```bash
 alias PatMail='python3 /path/to/PatMail/src/main.py'
 ```
-## Solução de Problemas (Troubleshooting)
+## Solution of Problems (Troubleshooting)
 
-- PatMail utiliza apenas o servidor SMTP do Google para realizar os envios dos emails e, por isso, estará limitado a possiveis restrições do servidor em questão;
-- Caso não consiga entrar com seu usuário e senha, tente gerar uma senha de aplicativo nas configurações do seu usuário Google e utilizá-la como senha.
-- Se o PatMail não estiver permitindo a importação de um arquivo .csv, se atente às restrições: 
-    * No cabeçalho (primeira linha), devem conter apenas duas informações: "Nome"/"Name" e "Email"/"E-Mail", nessa ordem (o aplicativo é case insensitive para essas informações, para facilitar);
-    * TODAS as linhas devem conter duas colunas com caracteres nelas;
-- Caso seu problema não esteja listado aqui ou as soluções apresentadas não resolveram seu problema, abra um issue detalhando a situação com o máximo de informações possível, para que seja possível investigar as causas do problema e procurar soluções;
+- PatMail only uses Google's SMTP server to send emails and, therefore, will be limited to possible restrictions of the server in question;
+- If you can't log in with your username and password, try generating an application password in your Google user settings and using it as a password.
+- If PatMail is not allowing the import of a .csv file, pay attention to the restrictions:
+    * In the header (first line), they must contain only two pieces of information: "Name"/"Name" and "Email"/"E-Mail", in that order (the application is case insensitive for this information, to make it easier);
+    * ALL rows must contain two columns with characters in them;
+- If your problem is not listed here or the solutions presented did not solve your problem, open an issue detailing the situation with as much information as possible, so that it is possible to investigate the causes of the problem and look for solutions;
 
-## Licença
+## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
