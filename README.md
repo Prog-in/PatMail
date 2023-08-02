@@ -1,6 +1,6 @@
 #### _Read this in [other languages](translations/Translations.md)
 
-<kbd>[<img title="Portugese Brazilian" alt="French" src="https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/pt.svg" width="22">](translations/README.pt.md)</kbd>
+<kbd>[<img title="Portugese Brazilian" alt="Portuguese" src="https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/br.svg" width="22">](translations/README.pt-br.md)</kbd>
 <kbd>[<img title="French" alt="French" src="https://cdn.staticaly.com/gh/hjnilsson/country-flags/master/svg/fr.svg" width="22">](translations/README.fr.md)</kbd>
 
 
